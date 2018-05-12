@@ -1,0 +1,13 @@
+<html>
+  <head>
+    {% if title %}
+    <title>{{ title }} - DialogFlow API</title>
+    {% else %}
+    <title>Welcome to DialogFlow API</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>DialogFlow API: <a href="/index">Home</a></div>
+    {% block content %}{% endblock %}
+  </body>
+</html>
