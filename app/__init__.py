@@ -2,18 +2,35 @@ import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 import os
 from flask import Flask
-from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_login import LoginManager
+from flask_bootstrap import Bootstrap
+from config import Config
+import jinja2_highlight
+
+class MyFlask(Flask):
+    jinja_options = dict(Flask.jinja_options)
+    jinja_options.setdefault('extensions',
+        []).append('jinja2_highlight.HighlightExtension')
 
 
-app = Flask(__name__)
+    # If you'd like to set the class name of the div code blocks are rendered in
+    # Uncomment the below lines otherwise the option below can be used
+    #@locked_cached_property
+    #def jinja_env(self):
+    #    jinja_env = self.create_jinja_environment()
+    #    jinja_env.extend(jinja2_highlight_cssclass = 'codehilite')
+    #    return jinja_env
+
+
+app = MyFlask(__name__)
 app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 login = LoginManager(app)
 login.login_view = 'login'
+bootstrap = Bootstrap(app)
 
 if not app.debug:
     if app.config['MAIL_SERVER']:
