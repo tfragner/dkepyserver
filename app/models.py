@@ -67,7 +67,8 @@ def load_user(id):
 class Sparql(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100))
-    sparqlquery = db.Column(db.String(500))
+    sparqlquery = db.Column(db.String(1000))
+    pythonscript = db.Column(db.String(1000))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     parameters = db.relationship('Parameter', backref='belongsTo', lazy='dynamic')

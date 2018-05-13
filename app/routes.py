@@ -1,11 +1,14 @@
 from datetime import datetime
-from flask import render_template, flash, redirect, url_for, request
+from flask import render_template, flash, redirect, url_for, request,  \
+    make_response, jsonify
 from werkzeug.urls import url_parse
 from flask_login import login_user, current_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
     SparqlForm
 from app.models import User, Sparql
+from SPARQLWrapper import SPARQLWrapper, JSON
+from config import Config
 
 
 @app.before_request
@@ -21,7 +24,7 @@ def before_request():
 def index():
     form = SparqlForm()
     if form.validate_on_submit():
-        query = Sparql(description=form.description.data, sparqlquery=form.sparqlquery.data, author=current_user)
+        query = Sparql(description=form.description.data, sparqlquery=form.sparqlquery.data, pythonscript=form.pythonscript.data, author=current_user)
         db.session.add(query)
         db.session.commit()
         flash('Your Query is now live!')
@@ -139,7 +142,7 @@ def follow(username):
 def unfollow(username):
     user = User.query.filter_by(username=username).first()
     if user is None:
-        flash('User {} nit found.'.format(username))
+        flash('User {} not found.'.format(username))
         return redirect(url_for('index'))
     if user == current_user:
         flash('You cannot unfollow yourself!')
@@ -148,3 +151,48 @@ def unfollow(username):
     db.session.commit()
     flash('You are not following {}'.format(username))
     return redirect(url_for('user', username=username))
+
+
+@app.route('/deletequery/<id>')
+@login_required
+def deletequery(id):
+    query = Sparql.query.filter_by(id=id).first()
+    if query is None:
+        flash('Query {} not found.'.format(id))
+        return redirect(url_for('index'))
+    db.session.delete(query)
+    db.session.commit()
+    flash('You deleted Query {}'.format(id))
+    return redirect(url_for('index'))
+
+
+@app.route('/webhook/', methods=['POST'])
+def webhook():
+    req = request.get_json(silent=True, force=True)
+    try:
+        action = req.get('queryResult').get('action')
+    except AttributeError:
+        return 'json error'
+
+    query = Sparql.query.filter_by(description=action).first()
+
+    if query is None:
+        log.error('Unexpected action.')
+
+    sparql = SPARQLWrapper(Config.SPARQLSERVER)
+
+    sparql.setQuery(query.sparqlquery)
+    sparql.setReturnFormat(JSON)
+    results = sparql.query().convert()
+
+    f = make_fun(query.pythonscript)
+
+    lst = f(results)
+
+    return make_response(jsonify({'fulfillmentText': 'test',
+                                  "fulfillmentMessages": [{'payload': {'dkepr': lst}}]}))
+
+
+def make_fun(scripttext):
+    exec(scripttext)
+    return locals()['f']

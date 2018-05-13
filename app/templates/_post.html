@@ -16,7 +16,11 @@
         {% highlight 'sparql' %}
 {{query.sparqlquery}}
         {% endhighlight %}
+        {% highlight 'python' %}
+{{query.pythonscript}}
+        {% endhighlight %}
       </div>
+      <p><a href="{{ url_for('deletequery', id=query.id) }}">Delete Query</a></p>
     </td>
   </tr>
 </table>

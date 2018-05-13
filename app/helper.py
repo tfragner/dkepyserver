@@ -1,0 +1,2 @@
+class Dynamo(object):
+    pass

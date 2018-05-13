@@ -51,5 +51,7 @@ class SparqlForm(FlaskForm):
     description = StringField('Function name: ', validators=[
         DataRequired(), Length(min=1, max=100)])
     sparqlquery = TextAreaField('Query string: ', validators=[
-        DataRequired(), Length(min=1, max=500)])
+        DataRequired(), Length(min=1, max=1000)])
+    pythonscript = TextAreaField('Python script: ', validators=[
+        DataRequired(), Length(min=1, max=1000)])
     submit = SubmitField('Submit')
