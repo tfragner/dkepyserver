@@ -55,3 +55,13 @@ class SparqlForm(FlaskForm):
     pythonscript = TextAreaField('Python script: ', validators=[
         DataRequired(), Length(min=1, max=1000)])
     submit = SubmitField('Submit')
+
+
+class AddParameterForm(FlaskForm):
+    name = StringField('Text to replace: ', validators=[
+        DataRequired(), Length(min=1, max=64)])
+    description = StringField('Description: ', validators=[
+        DataRequired(), Length(min=1, max=100)])
+    pythonscript = TextAreaField('Python script: ', validators=[
+        DataRequired(), Length(min=1, max=1000)])
+    submit = SubmitField('Submit')

@@ -5,8 +5,8 @@ from werkzeug.urls import url_parse
 from flask_login import login_user, current_user, logout_user, login_required
 from app import app, db
 from app.forms import LoginForm, RegistrationForm, EditProfileForm, \
-    SparqlForm
-from app.models import User, Sparql
+    SparqlForm, AddParameterForm
+from app.models import User, Sparql, Parameter
 from SPARQLWrapper import SPARQLWrapper, JSON
 from config import Config
 
@@ -166,6 +166,20 @@ def deletequery(id):
     return redirect(url_for('index'))
 
 
+@app.route('/addparameter/<id>', methods=['GET', 'POST'])
+@login_required
+def addparameter(id):
+    form = AddParameterForm()
+    if form.validate_on_submit():
+        query = Sparql.query.get(id)
+        param = Parameter(name=form.name.data, description=form.description.data, pythonscript=form.pythonscript.data, belongsTo=query)
+        db.session.add(param)
+        db.session.commit()
+        flash('Your Parameter is now live!')
+        return redirect(url_for('index'))
+    return render_template('addparameter.html', title='Add Parameter', form=form)
+
+
 @app.route('/webhook/', methods=['POST'])
 def webhook():
     req = request.get_json(silent=True, force=True)
@@ -181,7 +195,16 @@ def webhook():
 
     sparql = SPARQLWrapper(Config.SPARQLSERVER)
 
-    sparql.setQuery(query.sparqlquery)
+    querystring = query.sparqlquery
+    params = query.parameters
+
+    for p in params:
+        f = make_fun(p.pythonscript)
+        querystring = f(querystring, p.name, req['queryResult']['parameters'])
+
+    print(querystring)
+
+    sparql.setQuery(querystring)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
 

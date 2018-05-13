@@ -20,7 +20,13 @@
 {{query.pythonscript}}
         {% endhighlight %}
       </div>
+      {% if query.parameters %}
+        {% for par in query.parameters  %}
+          {% include "_param.html" %}
+        {% endfor %}
+      {% endif %}
       <p><a href="{{ url_for('deletequery', id=query.id) }}">Delete Query</a></p>
+      <p><a href="{{ url_for('addparameter', id=query.id) }}">Add Parameter</a></p>
     </td>
   </tr>
 </table>

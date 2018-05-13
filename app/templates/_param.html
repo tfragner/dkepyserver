@@ -1,0 +1,15 @@
+<table class="table">
+  <tr>
+    <td>
+      {{ par.name }}
+    </td>
+    <td>
+      {{ par.description }}
+    </td>
+    <td>
+        {% highlight 'python' %}
+{{par.pythonscript}}
+        {% endhighlight %}
+    </td>
+  </tr>
+</table>

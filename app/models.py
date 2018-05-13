@@ -81,6 +81,7 @@ class Parameter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True)
     description = db.Column(db.String(100))
+    pythonscript = db.Column(db.String(1000))
     sparql_id = db.Column(db.Integer, db.ForeignKey('sparql.id'))
 
     def __repr__(self):
