@@ -1,6 +1,18 @@
 <table>
   <tr valign="top">
-    <td><img src="{{ post.author.avatar(36) }}"</td>
-    <td>{{ post.author.username }} says: <b>{{ post.body }}</b></td>
+    <td><img src="{{ query.author.avatar(36) }}"</td>
+    <td>
+      <div>
+        <p>
+          <a href="{{ url_for('user', username=query.author.username) }}">
+            {{ query.author.username }}
+          </a>
+          wrote function: <b>{{ query.description }}</b>
+        </p>
+        <p>
+          {{ query.sparqlquery}}
+        </p>
+      </div>
+    </td>
   </tr>
 </table>

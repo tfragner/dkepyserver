@@ -45,3 +45,11 @@ class EditProfileForm(FlaskForm):
             user = User.query.filter_by(username=username.data).first()
             if user is not None:
                 raise ValidationError('Please use a different username.')
+
+
+class SparqlForm(FlaskForm):
+    description = StringField('Function name: ', validators=[
+        DataRequired(), Length(min=1, max=100)])
+    sparqlquery = TextAreaField('Query string: ', validators=[
+        DataRequired(), Length(min=1, max=500)])
+    submit = SubmitField('Submit')
