@@ -21,7 +21,7 @@ class User(UserMixin, db.Model):
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     followed = db.relationship(
-        'User', secondary= followers,
+        'User', secondary=followers,
         primaryjoin=(followers.c.follower_id == id),
         secondaryjoin=(followers.c.followed_id == id),
         backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
@@ -67,6 +67,7 @@ def load_user(id):
 class Sparql(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(100))
+    sparql_url = db.Column(db.String(200))
     sparqlquery = db.Column(db.String(1000))
     pythonscript = db.Column(db.String(1000))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)

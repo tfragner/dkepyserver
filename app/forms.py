@@ -50,6 +50,8 @@ class EditProfileForm(FlaskForm):
 class SparqlForm(FlaskForm):
     description = StringField('Function name: ', validators=[
         DataRequired(), Length(min=1, max=100)])
+    sparql_url = StringField('Sparql Endpoint: ', validators=[
+        DataRequired(), Length(min=1, max=200)])
     sparqlquery = TextAreaField('Query string: ', validators=[
         DataRequired(), Length(min=1, max=1000)])
     pythonscript = TextAreaField('Python script: ', validators=[

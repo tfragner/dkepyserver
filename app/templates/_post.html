@@ -13,6 +13,9 @@
           </a>
           wrote function: <b>{{ query.description }}</b>
         </p>
+        <p>
+          {{ query.sparql_url}}
+        </p>
         {% highlight 'sparql' %}
 {{query.sparqlquery}}
         {% endhighlight %}

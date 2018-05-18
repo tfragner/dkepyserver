@@ -24,7 +24,7 @@ def before_request():
 def index():
     form = SparqlForm()
     if form.validate_on_submit():
-        query = Sparql(description=form.description.data, sparqlquery=form.sparqlquery.data, pythonscript=form.pythonscript.data, author=current_user)
+        query = Sparql(description=form.description.data, sparql_url=form.sparql_url.data, sparqlquery=form.sparqlquery.data, pythonscript=form.pythonscript.data, author=current_user)
         db.session.add(query)
         db.session.commit()
         flash('Your Query is now live!')
@@ -193,7 +193,8 @@ def webhook():
     if query is None:
         log.error('Unexpected action.')
 
-    sparql = SPARQLWrapper(Config.SPARQLSERVER)
+    # sparql = SPARQLWrapper(Config.SPARQLSERVER)
+    sparql = SPARQLWrapper(query.sparql_url)
 
     querystring = query.sparqlquery
     params = query.parameters
@@ -208,9 +209,13 @@ def webhook():
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
 
+    print(results)
+
     f = make_fun(query.pythonscript)
 
     lst = f(results)
+    print(jsonify({'fulfillmentText': 'test',
+                                  "fulfillmentMessages": [{'payload': {'dkepr': lst}}]}))
 
     return make_response(jsonify({'fulfillmentText': 'test',
                                   "fulfillmentMessages": [{'payload': {'dkepr': lst}}]}))
